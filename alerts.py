@@ -1,8 +1,9 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, Response, abort
 from flask_mysqldb import MySQL
 from datetime import datetime, date, timedelta
 import decimal
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 
@@ -112,11 +113,62 @@ def add_alerte():
     return jsonify({"message": "Alerte ajoutée avec succès"}), 201
 
 # Chemin absolu vers le dossier contenant les vidéos
-VIDEO_FOLDER = "E:\Pils\output_videos/alerts"
+VIDEO_FOLDER = "E:/Pils/output_videos/alerts"
 
 @app.route('/videos/<filename>')
-def serve_video(filename):
-    return send_from_directory(VIDEO_FOLDER, filename)
+def stream_video(filename):
+    # Chemin complet de la vidéo
+    video_path = os.path.join(VIDEO_FOLDER, filename)
+
+    # Vérifier si le fichier existe
+    if not os.path.exists(video_path):
+        abort(404, "Vidéo introuvable")
+
+    # Obtenir l'en-tête "Range" de la requête
+    range_header = request.headers.get('Range', None)
+    file_size = os.path.getsize(video_path)
+
+    # Si aucun en-tête Range n'est fourni, envoyer le fichier complet
+    if range_header is None:
+        return Response(
+            open(video_path, "rb"),
+            status=200,
+            content_type="video/mp4",
+            headers={
+                "Content-Length": file_size,
+                "Accept-Ranges": "bytes",
+            },
+        )
+
+    # Analyser l'en-tête Range
+    try:
+        range_match = range_header.replace("bytes=", "").split("-")
+        start = int(range_match[0])
+        end = int(range_match[1]) if range_match[1] else file_size - 1
+    except ValueError:
+        abort(400, "En-tête Range invalide")
+
+    # Limiter la fin à la taille totale du fichier
+    end = min(end, file_size - 1)
+    chunk_size = end - start + 1
+
+    # Lire la portion demandée
+    with open(video_path, "rb") as f:
+        f.seek(start)
+        chunk_data = f.read(chunk_size)
+
+    # Construire la réponse
+    response = Response(
+        chunk_data,
+        status=206,
+        content_type="video/mp4",
+        headers={
+            "Content-Range": f"bytes {start}-{end}/{file_size}",
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunk_size,
+        },
+    )
+    return response
 
 
 
