@@ -8,9 +8,13 @@ import json
 import time
 import requests
 from flask import Flask
+from flask_socketio import SocketIO
+import asyncio
+import websockets
 
 class ChildTrackingSystem:
     def __init__(self, model_path, watch_dir, output_dir):
+
         # Initialisation du device (CPU ou GPU)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Appareil utilisé : {self.device}")
