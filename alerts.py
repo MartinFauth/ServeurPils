@@ -5,7 +5,11 @@ import decimal
 from flask_cors import CORS
 import os
 
+
+
+
 app = Flask(__name__)
+
 
 # Configuration de la connexion MySQL
 app.config['MYSQL_HOST'] = 'localhost'  # Remplacer par ton hôte MySQL
@@ -15,6 +19,7 @@ app.config['MYSQL_DB'] = 'alerts_list'
 CORS(app, supports_credentials=True)
 
 mysql = MySQL(app)
+
 
 # Fonction utilitaire pour convertir les types non JSON-sérialisables
 def serialize_sql_row(row):
@@ -127,16 +132,16 @@ def stream_video(filename):
     # Obtenir l'en-tête "Range" de la requête
     range_header = request.headers.get('Range', None)
     file_size = os.path.getsize(video_path)
-
+    print("range headear ========================        " , range_header)
     # Si aucun en-tête Range n'est fourni, envoyer le fichier complet
     if range_header is None:
         return Response(
             open(video_path, "rb"),
             status=200,
-            content_type="video/mp4",
             headers={
                 "Content-Length": file_size,
                 "Accept-Ranges": "bytes",
+                "Content-Type": "video/mp4",
             },
         )
 
@@ -161,14 +166,18 @@ def stream_video(filename):
     response = Response(
         chunk_data,
         status=206,
-        content_type="video/mp4",
         headers={
             "Content-Range": f"bytes {start}-{end}/{file_size}",
             "Accept-Ranges": "bytes",
             "Content-Length": chunk_size,
+            "Content-Type": "video/mp4",
         },
     )
     return response
+
+
+
+
 
 
 
