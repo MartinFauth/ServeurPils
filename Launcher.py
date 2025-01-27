@@ -10,7 +10,7 @@ subprocess.Popen(["python", "alerts.py"])
 subprocess.Popen(["python", "fusionSansWS.py"])
 
 
-subprocess.Popen(["python", "sockettest.py"])
+##subprocess.Popen(["python", "sockettest.py"])
 
 # Empêcher le script de se fermer immédiatement et maintenir les processus actifs
 try:

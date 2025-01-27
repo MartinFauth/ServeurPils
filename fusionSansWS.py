@@ -198,7 +198,7 @@ if __name__ == "__main__":
     # Paramètres
     model_path = "yolo11m.pt"
     watch_dir = "./input_videos/"
-    output_dir = "E:/Pils/output_videos/"
+    output_dir = "C:/Users/marti/OneDrive/Documents/InsaLyon/5A/PILS/pils/public/output_videos/"
 
     system = ChildTrackingSystem(model_path, watch_dir, output_dir)
     system.run()
