@@ -29,7 +29,7 @@ def login():
 
     if user:
 
-        response = make_response(jsonify({"message": "Login successful", "Session_id": secrets.token_hex(32), "isAdmin": 'admin' if user[4] else 'notAdmin' }))
+        response = make_response(jsonify({"message": "Login successful", "Session_id": secrets.token_hex(32), "isAdmin": 'admin' if user[4] else 'notAdmin' , "username" : user[1]}))
         
         # response.set_cookie(
         #     'session_token',
