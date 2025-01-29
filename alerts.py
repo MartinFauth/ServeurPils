@@ -71,7 +71,7 @@ def update_alerte(id):
     websocket = data.get('websocket')
     lastUpdate = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     updatedBy = data.get('updatedBy')
-    fauxPositif = data.get('fauxPositif', False)
+    fauxPositif = data.get('fauxPositif')
 
     query = """
     UPDATE alerts_list
